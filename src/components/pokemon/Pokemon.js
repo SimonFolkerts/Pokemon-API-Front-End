@@ -1,10 +1,12 @@
 import { useState } from "react";
 import "./Pokemon.scss";
 import PokemonListItem from "./PokemonListItem";
+import PokemonDetails from "./PokemonDetails";
 
 const Pokemon = () => {
   //  state variable that will be used to store the pokemon data once the request to the API is complete. Initialised with an empty array so that the map method further down doesn't crash becuase it can't find an array to map in the variable, see the note on line 25
   const [pokemonArray, setPokemonArray] = useState([]);
+  const [pokemonDetails, setPokemonDetails] = useState();
 
   // this function when called sends a request to the API and receives and processes the results into JS. It is asynchronous, hence the use of the async/await syntax
   const fetchPokemonList = async () => {
@@ -17,6 +19,16 @@ const Pokemon = () => {
   };
 
   //  this function is a click handler for the load pokemon button. It calls the fetchPokemonList function above
+  const fetchPokemonDetails = async (url) => {
+    const response = await fetch(url);
+    const data = await response.json();
+    setPokemonDetails(data);
+  };
+
+  const clearPokemonDetailsHandler = () => {
+    setPokemonDetails();
+  };
+
   const loadPokemonHandler = (event) => {
     fetchPokemonList();
   };
@@ -30,6 +42,7 @@ const Pokemon = () => {
         key={item.name}
         name={item.name}
         url={item.url}
+        onClick={fetchPokemonDetails}
       ></PokemonListItem>
     );
   });
@@ -39,8 +52,16 @@ const Pokemon = () => {
     <div>
       <h2>Pokemon</h2>
       <button onClick={loadPokemonHandler}>Load Pokemon</button>
-      {/* The array of PokemonListItem components is injected here */}
-      <ul>{pokemonListItems}</ul>
+
+      {pokemonDetails ? (
+        <PokemonDetails
+          pokemonDetails={pokemonDetails}
+          onClearPokemonDetails={clearPokemonDetailsHandler}
+        ></PokemonDetails>
+      ) : (
+        // The array of PokemonListItem components is injected here
+        <ul>{pokemonListItems}</ul>
+      )}
     </div>
   );
 };
