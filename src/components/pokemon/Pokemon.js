@@ -18,19 +18,22 @@ const Pokemon = () => {
     setPokemonArray(data.results);
   };
 
-  //  this function is a click handler for the load pokemon button. It calls the fetchPokemonList function above
+  // this function is similar to the one above, but when called accepts a url string and uses it to get the details about a specific pokemon, which is stored in a state variable. Is passed down to the PokemonListItem child components so that when they are clicked on they can call this function with their URL as an argument
   const fetchPokemonDetails = async (url) => {
     const response = await fetch(url);
     const data = await response.json();
+    // the pokemonDetails state variable is passed down to the PokemonDetails component below, so once this data is set it is available to that component
     setPokemonDetails(data);
   };
 
-  const clearPokemonDetailsHandler = () => {
-    setPokemonDetails();
-  };
-
+  //  this function is a click handler for the load pokemon button. It calls the fetchPokemonList function above
   const loadPokemonHandler = (event) => {
     fetchPokemonList();
+  };
+
+  // click handler for clearing pokemon details. It sets the details to 'undefined'
+  const clearPokemonDetailsHandler = () => {
+    setPokemonDetails();
   };
 
   // this bit of code is not a function, it executes every time the component is loaded/re-loaded. It scans the state variable and if there are any pokemon objects in the array it creates instances of the PokemonListItem component with the object data passed down as props
@@ -52,8 +55,9 @@ const Pokemon = () => {
     <div>
       <h2>Pokemon</h2>
       <button onClick={loadPokemonHandler}>Load Pokemon</button>
-
+      {/* this is a ternary expression that decides between rendering the list vs rendering the detail view. It only renders the detail view if the pokemonDetails state variable has data in it, otherwise it just renders the list */}
       {pokemonDetails ? (
+        // the PokemonDetails component receives the pokemonDetails data as a prop which it uses to render the name and artwork of the pokemon
         <PokemonDetails
           pokemonDetails={pokemonDetails}
           onClearPokemonDetails={clearPokemonDetailsHandler}
